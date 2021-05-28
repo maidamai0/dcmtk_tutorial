@@ -60,7 +60,3 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/spdlog/include)
 
 # tutorials
 add_subdirectory(src)
-
-# test
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/doctest)
-add_subdirectory(test)
