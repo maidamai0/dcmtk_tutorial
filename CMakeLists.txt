@@ -31,24 +31,9 @@ endif()
 enable_testing()
 
 # dcmtk
-# add -DCMAKE_CXX_FLAGS=/Zc:__cplusplus to cmake command line to enable c++17
-# add_compile_options not work, dont know why
-set(CMAKE_DEBUG_POSTFIX d)
-set(DCMTK_ENABLE_STL ON)
-set(DCMTK_OVERWRITE_WIN32_COMPILER_FLAGS OFF)
-set(DCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS ON)
-set(DCMTK_WIDE_CHAR_MAIN_FUNCTION ON)
-set(DCMTK_WITH_PNG ON)
-set(DCMTK_WITH_TIFF ON)
-set(DCMTK_WITH_OPENSSL OFF)
-set(DCMTK_WITH_ZLIB ON)
-set(DCMTK_WITH_ICONV ON)
-set(DCMTK_WITH_XML ON)
-set(DCMTK_WITH_OPENJPEG ON)
-set(DCMTK_SUPPORT_LIBRARIES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/deps/dcmtk-3.6.6-win64-support-MD-iconv-msvc-15.8)
-set(WITH_LIBXMLINC ${CMAKE_CURRENT_SOURCE_DIR}/deps/dcmtk-3.6.6-win64-support-MD-iconv-msvc-15.8/libxml2-iconv-2.9.10) # bug for xml
-add_subdirectory(deps/dcmtk)
-include_directories(${CMAKE_INSTALL_PREFIX}/include) # install path of dcmtk
+find_package(DCMTK REQUIRED)
+include_directories(${DCMTK_INCLUDE_DIRS})
+link_libraries(${DCMTK_LIBRARIES})
 
 # fmt
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/fmt)
