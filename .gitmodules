@@ -1,9 +1,6 @@
 [submodule "deps/fmt"]
 	path = deps/fmt
 	url = https://github.com/fmtlib/fmt.git
-[submodule "deps/dcmtk"]
-	path = deps/dcmtk
-	url = https://github.com/DCMTK/dcmtk.git
 [submodule "deps/spdlog"]
 	path = deps/spdlog
 	url = ../../gabime/spdlog
