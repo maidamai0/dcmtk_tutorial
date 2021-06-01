@@ -24,7 +24,7 @@ jobs:
         id: cache
         uses: actions/cache@v2
         with:
-          path: ${{github.workspace}}/dcmtk/install
+          path: ~/dcmtk/install
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
       - name: install dcmtk
@@ -33,10 +33,8 @@ jobs:
         run: |
           git clone https://github.com/DCMTK/dcmtk.git --depth 1
           cd dcmtk && mkdir build && cd build
-          cmake -G "Ninja" -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/dcmtk/install -DCMAKE_DEBUG_POSTFIX=d -DCMAKE_CXX_STANDARD=17 -DDCMTK_ENABLE_STL=ON -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS=OFF  -DDCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS=ON -DDCMTK_WIDE_CHAR_MAIN_FUNCTION=ON -DDCMTK_WITH_PNG=ON -DDCMTK_WITH_TIFF=ON -DDCMTK_WITH_OPENSSL=OFF -DDCMTK_WITH_ZLIB=ON -DDCMTK_WITH_ICONV=ON -DDCMTK_WITH_XML=ON -DDCMTK_WITH_OPENJPEG=ON ..
+          cmake -G "Ninja" -DCMAKE_INSTALL_PREFIX=~/dcmtk/install -DCMAKE_DEBUG_POSTFIX=d -DCMAKE_CXX_STANDARD=17 -DDCMTK_ENABLE_STL=ON -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS=OFF  -DDCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS=ON -DDCMTK_WIDE_CHAR_MAIN_FUNCTION=ON -DDCMTK_WITH_PNG=ON -DDCMTK_WITH_TIFF=ON -DDCMTK_WITH_OPENSSL=OFF -DDCMTK_WITH_ZLIB=ON -DDCMTK_WITH_ICONV=ON -DDCMTK_WITH_XML=ON -DDCMTK_WITH_OPENJPEG=ON ..
           cmake --build . --target install
-          cd ${{github.workspace}}
-          pwd
 
       - uses: actions/checkout@v2
         with:
@@ -55,10 +53,7 @@ jobs:
         # Note the current convention is to use the -S and -B options here to specify source
         # and build directories, but this is only available with CMake 3.13 and higher.
         # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-        run: |
-          ls -l ${{github.workspace}}/dcmtk/install/lib/cmake/dcmtk
-          cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_PREFIX_PATH=${{github.workspace}}/dcmtk/install/lib/cmake/dcmtk
-          cat CMakeCache.txt
+        run: cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_PREFIX_PATH=~/dcmtk/install/lib/cmake/dcmtk
         env:
           CC: gcc-10
           CXX: g++-10
