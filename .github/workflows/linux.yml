@@ -23,7 +23,6 @@ jobs:
       - name: Cache dcmtk
         id: cache
         uses: actions/cache@v2
-        working-directory: ${{github.workspace}}
         with:
           path: dcmtk/build/install
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
