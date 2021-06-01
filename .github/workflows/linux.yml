@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: install dcmtk dependency
+      - name: install dependencies
         run: |
           sudo apt update 
-          sudo apt install libtiff-dev libpng-dev libxml2-dev -y
+          sudo apt install libtiff-dev libpng-dev libxml2-dev ninja-build -y
 
       - name: Cache dcmtk
         id: cache
