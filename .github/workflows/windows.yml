@@ -16,8 +16,8 @@ jobs:
     steps:
       - name: download dependencies
         run: |
-          curl.exe https://dicom.offis.de/download/dcmtk/dcmtk366/support/dcmtk-3.6.6-win64-support-MD-iconv-msvc-15.8.zip -o path/to/save
-          sudo apt install libtiff-dev libpng-dev libxml2-dev ninja-build -y
+          curl.exe https://dicom.offis.de/download/dcmtk/dcmtk366/support/dcmtk-3.6.6-win64-support-MD-iconv-msvc-15.8.zip -o dcmtk_support.zip
+          7z x dcmtk_support.zip
 
       - name: Cache dcmtk
         id: cache
