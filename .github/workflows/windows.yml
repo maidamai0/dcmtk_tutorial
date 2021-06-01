@@ -14,19 +14,28 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
     steps:
+      - uses: actions/checkout@v2
       - uses: seanmiddleditch/gha-setup-ninja@master
+        with:
+          submodules: true
 
-      - name: download dependencies
+      - name: Create Build Environment
+        # Some projects don't allow in-source building, so create a separate build directory
+        # We'll use this as our working directory for all subsequent commands
         run: |
-          curl.exe https://dicom.offis.de/download/dcmtk/dcmtk366/support/dcmtk-3.6.6-win64-support-MD-iconv-msvc-15.8.zip -o dcmtk_support.zip
-          7z x dcmtk_support.zip
+          cmake -E make_directory ${{github.workspace}}/build
 
       - name: Cache dcmtk
         id: cache
         uses: actions/cache@v2
         with:
-          path: $env:UserProfile\dcmtk\install
-          key: ${{ runner.os }}-${{github.workspace}}-windows
+          path: ${{github.workspace}}/dcmtk_install
+          key: ${{ runner.os }}-dcmtk
+
+      - name: download dependencies
+        run: |
+          curl.exe https://dicom.offis.de/download/dcmtk/dcmtk366/support/dcmtk-3.6.6-win64-support-MD-iconv-msvc-15.8.zip -o dcmtk_support.zip
+          7z x dcmtk_support.zip
 
       - name: install dcmtk
         working-directory: ${{github.workspace}}
@@ -34,18 +43,8 @@ jobs:
         run: |
           git clone https://github.com/DCMTK/dcmtk.git --depth 1
           cd dcmtk &&  cmake -E make_directory build && cd build
-          cmake -G "Ninja" -DCMAKE_INSTALL_PREFIX=$env:UserProfile\dcmtk\install -DCMAKE_DEBUG_POSTFIX=d -DCMAKE_CXX_STANDARD=17 -DDCMTK_ENABLE_STL=ON -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS=OFF  -DDCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS=ON -DDCMTK_WIDE_CHAR_MAIN_FUNCTION=ON -DDCMTK_WITH_PNG=ON -DDCMTK_WITH_TIFF=ON -DDCMTK_WITH_OPENSSL=OFF -DDCMTK_WITH_ZLIB=ON -DDCMTK_WITH_ICONV=ON -DDCMTK_WITH_XML=ON -DDCMTK_WITH_OPENJPEG=ON ..
+          cmake -G "Ninja" -DCMAKE_CXX_FLAGS=/Zc:__cplusplus -DCMAKE_INSTALL_PREFIX=bin -DCMAKE_DEBUG_POSTFIX=d -DCMAKE_CXX_STANDARD=17 -DDCMTK_ENABLE_STL=ON -DDCMTK_OVERWRITE_WIN32_COMPILER_FLAGS=OFF  -DDCMTK_WIDE_CHAR_FILE_IO_FUNCTIONS=ON -DDCMTK_WIDE_CHAR_MAIN_FUNCTION=ON -DDCMTK_WITH_PNG=ON -DDCMTK_WITH_TIFF=ON -DDCMTK_WITH_OPENSSL=OFF -DDCMTK_WITH_ZLIB=ON -DDCMTK_WITH_ICONV=ON -DDCMTK_WITH_XML=ON -DDCMTK_WITH_OPENJPEG=ON -DDCMTK_SUPPORT_LIBRARIES_DIR=${{github.workspace}}/dcmtk_support -DWITH_LIBXMLINC=${{github.workspace}}/dcmtk_support/libxml2-iconv-2.9.10 ..
           cmake --build . --target install
-
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
-      - name: Create Build Environment
-        # Some projects don't allow in-source building, so create a separate build directory
-        # We'll use this as our working directory for all subsequent commands
-        run: |
-          cmake -E make_directory ${{github.workspace}}/build
-          dir $env:UserProfile\dcmtk\install
       # - name: Configure CMake
       #   # Use a bash shell so we can use the same syntax for environment variable
       #   # access regardless of the host operating system
