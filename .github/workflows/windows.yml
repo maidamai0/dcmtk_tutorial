@@ -14,6 +14,8 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
     steps:
+      - uses: seanmiddleditch/gha-setup-ninja@master
+
       - name: download dependencies
         run: |
           curl.exe https://dicom.offis.de/download/dcmtk/dcmtk366/support/dcmtk-3.6.6-win64-support-MD-iconv-msvc-15.8.zip -o dcmtk_support.zip
@@ -27,7 +29,6 @@ jobs:
           key: ${{ runner.os }}-${{github.workspace}}-windows
 
       - name: install dcmtk
-        uses: seanmiddleditch/gha-setup-ninja@master
         working-directory: ${{github.workspace}}
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
