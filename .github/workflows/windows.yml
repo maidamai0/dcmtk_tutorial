@@ -14,9 +14,9 @@ jobs:
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v2
       - uses: seanmiddleditch/gha-setup-ninja@master
       - uses: ilammy/msvc-dev-cmd@v1
+      - uses: actions/checkout@v2
         with:
           submodules: true
 
@@ -31,7 +31,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{github.workspace}}/dcmtk_install
-          key: ${{ runner.os }}-dcmtk
+          key: ${{ runner.os }}-dcmtk_v2
 
       - name: download dependencies
         # if: steps.cache.outputs.cache-hit != 'true'
