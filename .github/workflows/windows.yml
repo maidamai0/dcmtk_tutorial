@@ -34,7 +34,7 @@ jobs:
           key: ${{ runner.os }}-dcmtk
 
       - name: download dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
+        # if: steps.cache.outputs.cache-hit != 'true'
         run: |
           curl.exe https://dicom.offis.de/download/dcmtk/dcmtk366/support/dcmtk-3.6.6-win64-support-MD-iconv-msvc-15.8.zip -o dcmtk_support.zip
           7z x dcmtk_support.zip
