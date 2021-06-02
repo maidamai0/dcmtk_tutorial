@@ -57,8 +57,9 @@ jobs:
         # and build directories, but this is only available with CMake 3.13 and higher.
         # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
         run: |
-          dir ${{github.workspace}}/dcmtk_install
-          cd ${{github.workspace}}/dcmtk_install
+          dir ${{github.workspace}}
+          cd ${{github.workspace}}
+          cd dcmtk_install
           dir
           cd ${{github.workspace}}/build
           cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_FLAGS=/Zc:__cplusplus -DCMAKE_PREFIX_PATH=${{github.workspace}}/dcmtk_install
