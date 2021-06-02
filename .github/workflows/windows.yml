@@ -58,8 +58,8 @@ jobs:
         # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
         run: |
           dir 
-          dir dcmtk_install
-          cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_FLAGS=/Zc:__cplusplus -DCMAKE_PREFIX_PATH=${{github.workspace}}/dcmtk_install
+        # dir dcmtk_install
+        # cmake $GITHUB_WORKSPACE -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_CXX_FLAGS=/Zc:__cplusplus -DCMAKE_PREFIX_PATH=${{github.workspace}}/dcmtk_install
 
       - name: Build
         working-directory: ${{github.workspace}}/build
