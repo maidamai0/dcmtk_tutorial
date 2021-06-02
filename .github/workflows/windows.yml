@@ -34,14 +34,14 @@ jobs:
           key: ${{ runner.os }}-dcmtk_v2
 
       - name: download dependencies
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           curl.exe https://dicom.offis.de/download/dcmtk/dcmtk366/support/dcmtk-3.6.6-win64-support-MD-iconv-msvc-15.8.zip -o dcmtk_support.zip
           7z x dcmtk_support.zip
 
       - name: install dcmtk
         working-directory: ${{github.workspace}}
-        # if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           git clone https://github.com/DCMTK/dcmtk.git --depth 1
           cd dcmtk &&  cmake -E make_directory build && cd build
