@@ -13,3 +13,9 @@ openssl req -x509 -days 3650 -newkey rsa:2048 -keyout key.pem -out cert.pem -sub
 openssl pkcs12 -export -in cert.pem -inkey key.pem -out cert.pfx
 openssl pkcs12 -in cert.pfx -clcerts -nokeys -out cert_public.pem
 ```
+
+:bulb: Use `1234` as password when openssl requested otherwise mofify or comment [tls_helper.hpp:48](src/tls_helper.hpp)
+
+```cpp
+tls_layer_->setPrivateKeyPasswd("1234");
+```

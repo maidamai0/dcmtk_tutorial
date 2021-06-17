@@ -45,6 +45,7 @@ class DcmTsl {
       LOGE("Create TLS failed");
       return OFCondition(EC_IllegalCall);
     }
+    tls_layer_->setPrivateKeyPasswd("1234");
     auto cond = tls_layer_->setPrivateKeyFile(key_path.c_str(), DCF_Filetype_PEM);
     if (cond.bad()) {
       LOGE("Load private key file[{}] failed:{}", key_path, err_msg(cond));
