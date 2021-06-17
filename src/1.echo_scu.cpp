@@ -1,3 +1,4 @@
+#include "cxxopts.hpp"
 #include "dcmtk/dcmdata/dcdatset.h"
 #include "dcmtk/dcmdata/dcdict.h"
 #include "dcmtk/dcmdata/dcobject.h"
@@ -12,6 +13,7 @@
 #include "dcmtk/ofstd/ofstring.h"
 #include "fmt/format.h"
 #include "log.hpp"
+#include "tls_helper.hpp"
 
 namespace {
 /* DICOM standard transfer syntaxes */
@@ -23,6 +25,16 @@ static const char* transfer_syntaxes[] = {
 }  // namespace
 
 int main(int argc, char** argv) {
+  cxxopts::Options options("EchoScu", "Echo Scu");
+  // default dicom port of orthanc
+  options.add_options()("p,port", "Server port, default to orthanc port 4646",
+                        cxxopts::value<int>()->default_value("4646"))("h,help", "Print usage");
+  auto args = options.parse(argc, argv);
+  if (args.count("help")) {
+    fmt::print(options.help());
+    return EXIT_SUCCESS;
+  }
+
   OFStandard::initializeNetwork();
 
   // socket
@@ -52,10 +64,23 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  tls::TslHeper tls;
+  cond = tls.Init(asc_network, asc_parameter, res_path("key.pem"), res_path("cert.pem"), tls::EndPoint::kClient);
+  if (cond.bad()) {
+    LOGE("Initialize TLS failed:{}", err_msg(cond));
+    return EXIT_FAILURE;
+  }
+
+  cond = tls.AddTrustedCertificate(res_path("cert_public.pem"));
+  if (cond.bad()) {
+    LOGE("Add trusted certificate file failed:{}", err_msg(cond));
+    return EXIT_FAILURE;
+  }
+
   constexpr auto our_app_title = "ECHOSCU";
   constexpr auto peer_app_title = "ANY-SCP";
   constexpr auto peer_host = "localhost";
-  constexpr auto peer_port = 4243;  // default dicom port of orthanc
+  auto peer_port = args["port"].as<int>();
   ASC_setAPTitles(asc_parameter, our_app_title, peer_app_title, nullptr);
   ASC_setPresentationAddresses(asc_parameter, OFStandard::getHostName().c_str(),
                                fmt::format("{}:{}", peer_host, peer_port).c_str());
