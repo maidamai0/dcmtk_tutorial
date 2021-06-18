@@ -9,6 +9,8 @@
 #include "dcmtk/dcmnet/dicom.h"
 #include "dcmtk/dcmnet/dimse.h"
 #include "dcmtk/dcmnet/diutil.h"
+#include "dcmtk/oflog/logger.h"
+#include "dcmtk/oflog/loglevel.h"
 #include "dcmtk/ofstd/ofstd.h"
 #include "dcmtk/ofstd/ofstring.h"
 #include "fmt/format.h"
@@ -27,13 +29,27 @@ static const char* transfer_syntaxes[] = {
 int main(int argc, char** argv) {
   cxxopts::Options options("EchoScu", "Echo Scu");
   // default dicom port of orthanc
-  options.add_options()("p,port", "Server port, default to orthanc port 4646",
-                        cxxopts::value<int>()->default_value("4646"))("h,help", "Print usage");
-  auto args = options.parse(argc, argv);
-  if (args.count("help")) {
+
+  // clang-format off
+  options.add_options()
+  ("H,host", "Server address", cxxopts::value<std::string>()->default_value("localhost"))
+  ("p,port", "Server port", cxxopts::value<int>()->default_value("4646"))
+  ("t,title", "Server Application title", cxxopts::value<std::string>()->default_value("ANY_SCP"))
+  ("h,help", "Print usage");
+  // clang-format on
+  cxxopts::ParseResult args;
+  try {
+    args = options.parse(argc, argv);
+    if (args.count("help")) {
+      fmt::print(options.help());
+      return EXIT_SUCCESS;
+    }
+  } catch (cxxopts::OptionException* e) {
     fmt::print(options.help());
     return EXIT_SUCCESS;
   }
+
+  dcmtk::log4cplus::Logger::getRoot().setLogLevel(dcmtk::log4cplus::TRACE_LOG_LEVEL);
 
   OFStandard::initializeNetwork();
 
@@ -78,10 +94,10 @@ int main(int argc, char** argv) {
   }
 
   constexpr auto our_app_title = "ECHOSCU";
-  constexpr auto peer_app_title = "ANY-SCP";
-  constexpr auto peer_host = "localhost";
-  auto peer_port = args["port"].as<int>();
-  ASC_setAPTitles(asc_parameter, our_app_title, peer_app_title, nullptr);
+  const auto peer_app_title = args["title"].as<std::string>();
+  const auto peer_host = args["host"].as<std::string>();
+  const auto peer_port = args["port"].as<int>();
+  ASC_setAPTitles(asc_parameter, our_app_title, peer_app_title.c_str(), nullptr);
   ASC_setPresentationAddresses(asc_parameter, OFStandard::getHostName().c_str(),
                                fmt::format("{}:{}", peer_host, peer_port).c_str());
 
@@ -89,12 +105,12 @@ int main(int argc, char** argv) {
   cond = ASC_addPresentationContext(asc_parameter, 1, UID_VerificationSOPClass, transfer_syntaxes,
                                     asc_transfer_syntax_num);
   if (cond.bad()) {
-    LOGD("Add presentation context failed:{}", DimseCondition::dump(error_msg, cond));
+    LOGW("Add presentation context failed:{}", DimseCondition::dump(error_msg, cond));
     return EXIT_FAILURE;
   }
 
-  LOGD("Request parameters:\n{}", ASC_dumpParameters(error_msg, asc_parameter, ASC_ASSOC_RQ));
-  LOGD("Connecting to {}:{}", peer_host, peer_port);
+  LOGI("Request parameters:\n{}", ASC_dumpParameters(error_msg, asc_parameter, ASC_ASSOC_RQ));
+  LOGI("Connecting to {}:{}", peer_host, peer_port);
   T_ASC_Association* asc_association;
   cond = ASC_requestAssociation(asc_network, asc_parameter, &asc_association);
   if (cond.bad()) {
