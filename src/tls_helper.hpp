@@ -112,9 +112,8 @@ class Helper {
 
 #ifdef WITH_OPENSSL
 using TslHeper = Helper<details::DcmTsl>;
-// using TslHeper = Helper<details::None>;
+// using TslHeper = Helper<details::None>;`
 #else
-using TslHeper = Helper<details::DcmTsl>;
-// using TslHeper = Helper<details::None>;
+using TslHeper = Helper<details::None>;
 #endif
 }  // namespace tls
