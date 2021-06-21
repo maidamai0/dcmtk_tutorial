@@ -5,3 +5,6 @@
 	path = deps/spdlog
 	url = ../../gabime/spdlog
 	branch = master
+[submodule "deps/cxxopts"]
+	path = deps/cxxopts
+	url = https://github.com/jarro2783/cxxopts.git
