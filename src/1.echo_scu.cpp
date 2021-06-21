@@ -13,7 +13,6 @@
 #include "dcmtk/oflog/loglevel.h"
 #include "dcmtk/ofstd/ofstd.h"
 #include "dcmtk/ofstd/ofstring.h"
-#include "fmt/format.h"
 #include "log.hpp"
 #include "tls_helper.hpp"
 
