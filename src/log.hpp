@@ -21,6 +21,8 @@
 
 #include <string_view>
 
+#include "dcmtk/oflog/logger.h"
+#include "dcmtk/oflog/loglevel.h"
 #include "spdlog/common.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -39,6 +41,7 @@ class Log {
     spdlog::flush_on(spdlog::level::debug);
     spdlog::set_pattern("%L %Y-%m-%d@%T.%e %s:%# => %v");
     LOGI("{} started", FILE_NAME);
+    dcmtk::log4cplus::Logger::getRoot().setLogLevel(dcmtk::log4cplus::TRACE_LOG_LEVEL);
   }
 
   Log(const Log&) = delete;

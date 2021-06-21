@@ -128,11 +128,20 @@ OFCondition accept_association(T_ASC_Network* net, DcmAssociationConfiguration& 
 
 int main(int argc, char** argv) {
   cxxopts::Options options("StoreScp", "DICOM storage (C-STORE) SCP");
+  // clang-format off
   // default dicom port of orthanc
-  options.add_options()("p,port", "tcp/ip port to listen on", cxxopts::value<int>()->default_value("4646"))(
-      "h,help", "Print usage");
-  auto args = options.parse(argc, argv);
-  if (args.count("help")) {
+  options.add_options()
+  ("p,port", "tcp/ip port to listen on", cxxopts::value<int>()->default_value("4646"))
+  ("h,help", "Print usage");
+  // clang-format on
+  cxxopts::ParseResult args;
+  try {
+    args = options.parse(argc, argv);
+    if (args.count("help")) {
+      fmt::print(options.help());
+      return EXIT_SUCCESS;
+    }
+  } catch (const cxxopts::OptionException& e) {
     fmt::print(options.help());
     return EXIT_SUCCESS;
   }
@@ -156,13 +165,13 @@ int main(int argc, char** argv) {
   }
 
   tls::TslHeper tls;
-  cond = tls.Init(asc_net, nullptr, res_path("key.pem"), res_path("cert.pem"));
+  cond = tls.Init(asc_net, nullptr, res_path("server_key.pem"), res_path("server_cert.pem"));
   if (cond.bad()) {
     LOGE("Initialize TLS failed:{}\n", err_msg(cond));
     return EXIT_FAILURE;
   }
 
-  cond = tls.AddTrustedCertificate(res_path("cert_public.pem"));
+  cond = tls.AddTrustedCertificate(res_path("client_ca.pem"));
   if (cond.bad()) {
     LOGE("Add trusted certificate file failed:{}", err_msg(cond));
     return EXIT_FAILURE;

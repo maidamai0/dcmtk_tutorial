@@ -74,7 +74,7 @@ class DcmTsl {
 
     // TODO (tonghao): 2021-06-17
     // not recommend
-    tls_layer_->setCertificateVerification(DCV_ignoreCertificate);
+    // tls_layer_->setCertificateVerification(DCV_ignoreCertificate);
 
     cond = ASC_setTransportLayer(net, tls_layer_, 1);
     if (param) {
