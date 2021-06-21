@@ -15,28 +15,28 @@ namespace tls {
 
 enum class EndPoint { kClient, kServer };
 
-template <typename T>
-class Helper;
-
+#ifndef WITH_OPENSSL
 namespace details {
 
 class None {
-  // this class can only be accessed by Helper<None>
-  friend class Helper<None>;
-
-  OFCondition init(T_ASC_Network* net, T_ASC_Parameters* param, std::string&& key_path, std::string&& cert_path,
+ public:
+  OFCondition Init(T_ASC_Network* net, T_ASC_Parameters* param, std::string&& key_path, std::string&& cert_path,
                    EndPoint end_point = EndPoint::kServer) {
     return OFCondition(EC_Normal);
   }
-  auto add_trusted_certificate_file(std::string&& path) { return OFCondition(EC_Normal); }
+  auto AddTrustedCertificate(std::string&& path) { return OFCondition(EC_Normal); }
 };
+}  // namespace details
 
+using TslHeper = details::None;
+#endif
+
+#ifdef WITH_OPENSSL
+namespace details {
 class DcmTsl {
-  // this class can only be accessed by Helper<DcmTsl>
-  friend class Helper<DcmTsl>;
-
+ public:
   DcmTsl() = default;
-  OFCondition init(T_ASC_Network* net, T_ASC_Parameters* param, std::string&& key_path, std::string&& cert_path,
+  OFCondition Init(T_ASC_Network* net, T_ASC_Parameters* param, std::string&& key_path, std::string&& cert_path,
                    EndPoint end_point = EndPoint::kServer) {
     LOGI("OpenSSL version: {}", DcmTLSTransportLayer::getOpenSSLVersionName());
     tls_layer_ =
@@ -84,36 +84,16 @@ class DcmTsl {
     return cond;
   }
 
-  auto add_trusted_certificate_file(std::string&& path) {
+  auto AddTrustedCertificate(std::string&& path) {
     return tls_layer_->addTrustedCertificateFile(path.c_str(), DCF_Filetype_PEM);
   }
 
  private:
   DcmTLSTransportLayer* tls_layer_ = nullptr;
 };
-
 }  // namespace details
 
-template <typename T = details::DcmTsl>
-class Helper {
-  using tls_imp = T;
-
- public:
-  auto Init(T_ASC_Network* net, T_ASC_Parameters* param, std::string&& key_path, std::string&& cert_path,
-            EndPoint end_point = EndPoint::kServer) {
-    return imp.init(net, param, std::move(key_path), std::move(cert_path), end_point);
-  }
-
-  auto AddTrustedCertificate(std::string&& path) { return imp.add_trusted_certificate_file(std::move(path)); }
-
- private:
-  tls_imp imp;
-};
-
-#ifdef WITH_OPENSSL
-using TslHeper = Helper<details::DcmTsl>;
-// using TslHeper = Helper<details::None>;`
-#else
-using TslHeper = Helper<details::None>;
+using TslHeper = details::DcmTsl;
 #endif
+
 }  // namespace tls
