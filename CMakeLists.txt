@@ -43,5 +43,11 @@ set(SPDLOG_FMT_EXTERNAL_HO CACHE "use header only fmtlib" STRING FORCE ON)
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/deps/spdlog)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/spdlog/include)
 
+# cxxopts
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/deps/cxxopts/include)
+
+# resoruce path
+add_compile_definitions(RES_PATH="${CMAKE_CURRENT_SOURCE_DIR}/res/")
+
 # tutorials
 add_subdirectory(src)
