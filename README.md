@@ -3,6 +3,10 @@
 ![Windows](https://github.com/maidamai0/dcmtk_tutorial/actions/workflows/windows.yml/badge.svg)
 ![Linux](https://github.com/maidamai0/dcmtk_tutorial/actions/workflows/linux.yml/badge.svg)
 
+## Where to start
+
+[Understanding DICOM with Orthanc](https://book.orthanc-server.com/dicom-guide.html) can be a good start point if you never meet **DICOM** before.
+
 ## Generate SSL certificate and key
 
 Generate certificates in [res](./res) directory.
