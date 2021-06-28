@@ -80,14 +80,13 @@ int main(int argc, char** argv) {
   }
 
   tls::TslHeper tls;
-  cond = tls.Init(asc_network, asc_parameter, res_path("client_key.pem"), res_path("client_cert.pem"),
-                  tls::EndPoint::kClient);
+  cond = tls.Init(asc_network, asc_parameter, res_path("client.key"), res_path("client.crt"), tls::EndPoint::kClient);
   if (cond.bad()) {
     LOGE("Initialize TLS failed:{}", err_msg(cond));
     return EXIT_FAILURE;
   }
 
-  cond = tls.AddTrustedCertificate(res_path("server_ca.pem"));
+  cond = tls.AddTrustedCertificate(res_path("server.crt"));
   if (cond.bad()) {
     LOGE("Add trusted certificate file failed:{}", err_msg(cond));
     return EXIT_FAILURE;
